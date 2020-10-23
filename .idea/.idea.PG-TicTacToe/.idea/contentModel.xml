@@ -7,10 +7,10 @@
       <e p="Assembly-CSharp.csproj" t="IncludeRecursive" />
       <e p="Assets" t="Include">
         <e p="Scripts" t="Include">
-          <e p="ButtonView.cs" t="Include" />
-          <e p="Model.cs" t="Include" />
-          <e p="Presenter.cs" t="Include" />
-          <e p="TicTac.cs" t="Include" />
+          <e p="CellController.cs" t="Include" />
+          <e p="TicTacModel.cs" t="Include" />
+          <e p="TicTacPresenter.cs" t="Include" />
+          <e p="TicTacState.cs" t="Include" />
         </e>
       </e>
       <e p="obj" t="ExcludeRecursive" />
