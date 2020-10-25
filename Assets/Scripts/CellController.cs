@@ -6,6 +6,7 @@ using UnityEngine.UI;
 [RequireComponent(typeof(Button))]
 public class CellController : MonoBehaviour
 {
+    
     [SerializeField] public Vector2 coordinate;
     
     [SerializeField] private Sprite cross = default;
@@ -15,6 +16,7 @@ public class CellController : MonoBehaviour
     private Button _button;
     
     public event Action<Vector2> CellSelected;
+    
     private void Awake()
     {
         _image = GetComponent<Image>();
@@ -41,7 +43,4 @@ public class CellController : MonoBehaviour
             _button.enabled = false;
         }
     }
-    
-    
-    
 }

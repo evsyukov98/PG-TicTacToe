@@ -4,12 +4,13 @@ using UnityEngine;
 
 public class TicTacModel
 {
+    
     public event Action<Vector2,TicTacState> StateChanged;
     public event Action<TicTacState> WinnerFound;
 
     private bool _isCross;
 
-    private Dictionary<Vector2, TicTacState> _grid = new Dictionary<Vector2, TicTacState>
+    private readonly Dictionary<Vector2, TicTacState> _grid = new Dictionary<Vector2, TicTacState>
     {
         {new Vector2(1,1), TicTacState.None},
         {new Vector2(1,2), TicTacState.None},
@@ -42,12 +43,12 @@ public class TicTacModel
         CheckWinner(coordinate);
         _isCross = !_isCross;
     }
-
+    
     private void CheckWinner(Vector2 coordinate)
     {
         const int gridSize = 3;
-        TicTacState currentState = _grid[coordinate];
-
+        var currentState = _grid[coordinate];
+        
         if ((int)coordinate.x == 1)
         {
             for (int i = 1; i < gridSize; i++)
@@ -56,7 +57,11 @@ public class TicTacModel
                 {
                     break;
                 }
-                if(i == 2) WinnerFound?.Invoke(currentState);
+
+                if (i != gridSize - 1) continue;
+                
+                WinnerFound?.Invoke(currentState);
+                return;
             }
         }
 
@@ -68,7 +73,11 @@ public class TicTacModel
                 {
                     break;
                 }
-                if(i == 2) WinnerFound?.Invoke(currentState);
+
+                if (i != gridSize - 1) continue;
+                
+                WinnerFound?.Invoke(currentState);
+                return;
             }
         }
         
@@ -80,11 +89,14 @@ public class TicTacModel
                 { 
                     break;
                 }
-                if(i == 2) WinnerFound?.Invoke(currentState);
+
+                if (i != gridSize - 1) continue;
+                WinnerFound?.Invoke(currentState);
+                return;
             }
         }
-        
-        if ((int) coordinate.y == gridSize)
+
+        if ((int) coordinate.y == gridSize) 
         {
             for (int i = 1; i < gridSize; i++)
             {
@@ -92,26 +104,36 @@ public class TicTacModel
                 {
                     break;
                 }
-                if(i == 2) WinnerFound?.Invoke(currentState);
+
+                if (i != gridSize - 1) continue;
+                WinnerFound?.Invoke(currentState);
+                return;
             }
         }
 
-        if (_grid[new Vector2(2,2)] != TicTacState.None)
+        // Если точка помещена на диагоналях (11,22,33,13,31) % 2 = 0
+        if ((coordinate.y + coordinate.x) % 2 != 0) return;
+        
+        if ((int)coordinate.x == (int)coordinate.y)
         {
-            if (_grid[new Vector2(2, 2)] == _grid[new Vector2(1, 1)] &&
+            if (_grid[new Vector2(1, 1)] == _grid[new Vector2(2, 2)] &&
                 _grid[new Vector2(2, 2)] == _grid[new Vector2(3, 3)])
             {
                 WinnerFound?.Invoke(currentState);
             }
-
-            if (_grid[new Vector2(2, 2)] == _grid[new Vector2(1, 3)] &&
-                _grid[new Vector2(2, 2)] == _grid[new Vector2(3, 1)])
-            {
-                WinnerFound?.Invoke(currentState);
-            }
+            return;
         }
+            
+        if (_grid[new Vector2(1, 3)] == _grid[new Vector2(2, 2)] &&
+            _grid[new Vector2(2, 2)] == _grid[new Vector2(3, 1)])
+        {
+            WinnerFound?.Invoke(currentState);
+        }
+    }
 
-        /*if ((int)coordinate.x == 1)
+    private void CheckWinner1(Vector2 coordinate)
+    {
+        if ((int)coordinate.x == 1)
         {
             if (_grid[coordinate] == _grid[coordinate + new Vector2(1, 0)] &&
                 _grid[coordinate] == _grid[coordinate + new Vector2(2, 0)])
@@ -145,6 +167,25 @@ public class TicTacModel
             {
                 WinnerFound?.Invoke(_grid[coordinate]);
             }
-        }*/
+        }
+        
+        // Если точка помещена на диагоналях (11,22,33,13,31) % 2 = 0
+        if ((coordinate.y + coordinate.x) % 2 != 0) return;
+        
+        if ((int)coordinate.x == (int)coordinate.y)
+        {
+            if (_grid[new Vector2(1, 1)] == _grid[new Vector2(2, 2)] &&
+                _grid[new Vector2(2, 2)] == _grid[new Vector2(3, 3)])
+            {
+                WinnerFound?.Invoke(_grid[coordinate]);
+            }
+            return;
+        }
+            
+        if (_grid[new Vector2(1, 3)] == _grid[new Vector2(2, 2)] &&
+            _grid[new Vector2(2, 2)] == _grid[new Vector2(3, 1)])
+        {
+            WinnerFound?.Invoke(_grid[coordinate]);
+        }
     }
 }

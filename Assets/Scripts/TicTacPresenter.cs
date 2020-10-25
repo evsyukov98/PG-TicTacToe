@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -26,12 +25,12 @@ public class TicTacPresenter : MonoBehaviour
         }
 
         _model.StateChanged += CellStateChanged;
-        _model.WinnerFound += WinText;
+        _model.WinnerFound += Victory;
     }
 
     private void GetCellController()
     {
-        CellController[] cells = gameObject.GetComponentsInChildren<CellController>();
+        var cells = gameObject.GetComponentsInChildren<CellController>();
         
         foreach (var cell in cells)
         {
@@ -49,8 +48,11 @@ public class TicTacPresenter : MonoBehaviour
         _cellControllers[coordinate].CellStateChange(state);
     }
 
-    private void WinText(TicTacState state)
+    private void Victory(TicTacState state)
     {
         winText.text = $"Wictory: {state}";
+        _model.WinnerFound -= Victory;
+        _model.StateChanged -= CellStateChanged;
+        StartCoroutine(SceneController.RestartGame(2));
     }
 }

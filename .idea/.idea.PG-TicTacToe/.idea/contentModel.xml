@@ -8,6 +8,7 @@
       <e p="Assets" t="Include">
         <e p="Scripts" t="Include">
           <e p="CellController.cs" t="Include" />
+          <e p="SceneController.cs" t="Include" />
           <e p="TicTacModel.cs" t="Include" />
           <e p="TicTacPresenter.cs" t="Include" />
           <e p="TicTacState.cs" t="Include" />
