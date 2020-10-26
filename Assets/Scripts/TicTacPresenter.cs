@@ -5,42 +5,60 @@ using UnityEngine.UI;
 public class TicTacPresenter : MonoBehaviour
 {
 
+    [SerializeField] private AiEnable aiOff = default;
+    [SerializeField] private AiEnable aiOn = default;
+    
     [SerializeField] private Text winText = default;
 
     private Dictionary<Vector2, CellController> _cellControllers;
     
     private readonly TicTacModel _model = new TicTacModel();
 
+    private bool _aIEnabled;
+    
     private void Awake()
     {
         _cellControllers =  new Dictionary<Vector2, CellController>(9);
-        GetCellController();    
     }
 
     private void Start()
     {
-        foreach (var cell in _cellControllers)
-        {
-            cell.Value.CellSelected += OnCellSelected;
-        }
-
         _model.StateChanged += CellStateChanged;
         _model.WinnerFound += Victory;
+        
+        aiOff.AIEnable += AiEnable;
+        aiOn.AIEnable += AiEnable;
     }
 
-    private void GetCellController()
+    private void AiEnable(bool enable)
     {
-        var cells = gameObject.GetComponentsInChildren<CellController>();
+        _aIEnabled = enable;
         
-        foreach (var cell in cells)
+        aiOff.DisActivate();
+        aiOn.DisActivate();
+        
+        GetCellControllers();
+    }
+
+    private void GetCellControllers()
+    {
+        var cellControllersMass = gameObject.GetComponentsInChildren<CellController>();
+        
+        foreach (var cell in cellControllersMass)
         {
             _cellControllers.Add(cell.coordinate, cell);
+            cell.CellSelected += OnCellSelected;
         }
     }
     
     private void OnCellSelected(Vector2 coordinate)
     {
         _model.SetState(coordinate);
+
+        if (_aIEnabled)
+        {
+            _model.AiSetState();
+        }
     }
 
     private void CellStateChanged(Vector2 coordinate, TicTacState state)
@@ -53,6 +71,7 @@ public class TicTacPresenter : MonoBehaviour
         winText.text = $"Wictory: {state}";
         _model.WinnerFound -= Victory;
         _model.StateChanged -= CellStateChanged;
+        
         StartCoroutine(SceneController.RestartGame(2));
     }
 }

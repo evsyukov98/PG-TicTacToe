@@ -7,6 +7,8 @@ using UnityEngine.UI;
 public class CellController : MonoBehaviour
 {
     
+    public event Action<Vector2> CellSelected;
+
     [SerializeField] public Vector2 coordinate;
     
     [SerializeField] private Sprite cross = default;
@@ -14,8 +16,6 @@ public class CellController : MonoBehaviour
 
     private Image _image;
     private Button _button;
-    
-    public event Action<Vector2> CellSelected;
     
     private void Awake()
     {
