@@ -1,17 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using DefaultNamespace;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
-public class TicTacModel
+public class TicTacModel : IPlayerInput
 {
-    
-    public event Action<Vector2,TicTacState> StateChanged;
-    public event Action<TicTacState> WinnerFound;
-    
-    private bool _isCross;
+
     private int _turnCount = 9;
 
+    private IPlayer _player1;
+    private IPlayer _player2;
+
+    private IPlayer _activePlayer;
+    
+    private bool _isGameRunning;
+    
     private readonly Dictionary<Vector2, TicTacState> _grid = new Dictionary<Vector2, TicTacState>
     {
         {new Vector2(1,1), TicTacState.None},
@@ -25,23 +29,38 @@ public class TicTacModel
         {new Vector2(3,3), TicTacState.None},
     };
 
-    public void SetState(Vector2 coordinate)
+    public bool IsGameStarted
     {
-        _turnCount--;
-        
-        if (_isCross)
+        get => _isGameRunning;
+        private set
         {
-            _grid[coordinate] = TicTacState.Cross;
-            OnStateChanged(coordinate, TicTacState.Cross);
-        }
-        else
-        {
-            _grid[coordinate] = TicTacState.Noughts;
-            OnStateChanged(coordinate, TicTacState.Noughts);
+            if (_isGameRunning == value) return;
+            _isGameRunning = value;
+            GameStatusChanged?.Invoke();
         }
     }
 
-    public void AiSetState()
+    public event Action GameStatusChanged;
+    public event Action<Vector2,TicTacState> PlayerMadeTurn;
+    public event Action<TicTacState> WinnerFound;
+    
+    public void StartBattle(IPlayer player1, IPlayer player2)
+    {
+        if (IsGameStarted) return;
+        
+        _player1 = player1 ?? throw new NullReferenceException(nameof(player1));
+        _player2 = player2 ?? throw new NullReferenceException(nameof(player2));
+
+        _player1.State = TicTacState.Cross;
+        _player2.State = TicTacState.Noughts;
+
+        _activePlayer = _player1;
+        IsGameStarted = true;
+
+        _player1.MakeTurn(this);
+    }
+    
+    /*public void AiSetState()
     {
         if(_turnCount <= 0) return;
         
@@ -59,15 +78,29 @@ public class TicTacModel
         }
         
         SetState(aiCoordinate);
-    }
+    }*/
+
     
-    private void OnStateChanged(Vector2 coordinate, TicTacState state)
+    bool IPlayerInput.MakeTurn(IPlayer player, Vector2 coords)
     {
-        StateChanged?.Invoke(coordinate, state);
-        CheckWinner(coordinate);
-        _isCross = !_isCross;
+        if (player is null || player != _activePlayer) return false;
+        
+        SetState(player.State, coords);
+
+        _activePlayer = _activePlayer == _player1 ? _player2 : _player1;
+        if (_isGameRunning) _activePlayer.MakeTurn(this);
+        return true;
     }
-    
+
+    private void SetState(TicTacState state, Vector2 coordinate)
+    {
+        _turnCount--;
+        
+        _grid[coordinate] = state;
+        PlayerMadeTurn?.Invoke(coordinate, state);
+        CheckWinner(coordinate);
+    }
+
     private void CheckWinner(Vector2 coordinate)
     {
         const int gridSize = 3;
@@ -143,65 +176,4 @@ public class TicTacModel
         WinnerFound?.Invoke(currentState);
     }
 
-    /*private void CheckWinner1(Vector2 coordinate)
-    {
-        if ((int)coordinate.x == 1)
-        {
-            if (_grid[coordinate] == _grid[coordinate + new Vector2(1, 0)] &&
-                _grid[coordinate] == _grid[coordinate + new Vector2(2, 0)])
-            {
-                WinnerFound?.Invoke(_grid[coordinate]);
-                _winnerFound = true;
-            }
-        }
-        
-        if ((int)coordinate.y == 1)
-        {
-            if (_grid[coordinate] == _grid[coordinate + new Vector2(0, 1)] &&
-                _grid[coordinate] == _grid[coordinate + new Vector2(0, 2)])
-            {
-                WinnerFound?.Invoke(_grid[coordinate]);
-                _winnerFound = true;
-            }
-        }
-        
-        if ((int)coordinate.x == 3)
-        {
-            if (_grid[coordinate] == _grid[coordinate - new Vector2(1, 0)] &&
-                _grid[coordinate] == _grid[coordinate - new Vector2(2, 0)])
-            {
-                WinnerFound?.Invoke(_grid[coordinate]);
-                _winnerFound = true;
-            }
-        }
-        
-        if ((int)coordinate.y == 3)
-        {
-            if (_grid[coordinate] == _grid[coordinate - new Vector2(0, 1)] &&
-                _grid[coordinate] == _grid[coordinate - new Vector2(0, 2)])
-            {
-                WinnerFound?.Invoke(_grid[coordinate]);
-                _winnerFound = true;
-            }
-        }
-        
-        // Если точка помещена на диагоналях (11,22,33,13,31) % 2 = 0
-        if ((coordinate.y + coordinate.x) % 2 != 0) return;
-        
-        if ((int)coordinate.x == (int)coordinate.y)
-        {
-            if (_grid[new Vector2(1, 1)] != _grid[new Vector2(2, 2)] ||
-                _grid[new Vector2(2, 2)] != _grid[new Vector2(3, 3)]) return;
-            
-            WinnerFound?.Invoke(_grid[coordinate]);
-            _winnerFound = true;
-            return;
-        }
-
-        if (_grid[new Vector2(1, 3)] != _grid[new Vector2(2, 2)] ||
-            _grid[new Vector2(2, 2)] != _grid[new Vector2(3, 1)]) return;
-        
-        WinnerFound?.Invoke(_grid[coordinate]);
-        _winnerFound = true;
-    }*/
 }

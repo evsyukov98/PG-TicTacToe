@@ -43,4 +43,10 @@ public class CellController : MonoBehaviour
             _button.enabled = false;
         }
     }
+
+    public void SetActive(bool active)
+    {
+        _button.interactable = active;
+    }
+    
 }
