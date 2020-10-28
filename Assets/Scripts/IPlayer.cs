@@ -1,8 +1,8 @@
-﻿namespace DefaultNamespace
+﻿namespace TicTacToe
 {
     public interface IPlayer
     {
         TicTacState State { get; set; }
-        void MakeTurn(IPlayerInput input);
+        void MakeTurn(IPlayerReceiver input);
     }
 }

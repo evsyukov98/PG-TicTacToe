@@ -1,26 +1,35 @@
 ﻿using System;
+using UnityEngine;
 
-namespace DefaultNamespace
+namespace TicTacToe
 {
     public class LocalPlayer : IPlayer
     {
-        
-        public readonly string Name;
+        private readonly string _name;
         
         private readonly IInputController _inputController;
-        TicTacState IPlayer.State { get; set; }
+
+        private IPlayerReceiver _model;
+        public TicTacState State { get; set; }
 
         public LocalPlayer(string name, IInputController inputController)
         {
-            Name = name;
+            _name = name;
             _inputController = inputController ?? throw new NullReferenceException(nameof(inputController));
-            //TODO
-            // _inputController.OnCellSelected += 
+
         }
-        
-        void IPlayer.MakeTurn(IPlayerInput input)
+
+        public void MakeTurn(IPlayerReceiver model)
         {
-            throw new NotImplementedException();
+            _model = model;
+            _inputController.CellSelected += SelectCell;
+        }
+
+        private void SelectCell(Vector2 coordinate)
+        {
+            _model.MakeTurn(State,coordinate);
+
+            if (_inputController.CellSelected != null) _inputController.CellSelected -= SelectCell;
         }
         
     }
