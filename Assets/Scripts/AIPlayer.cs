@@ -4,36 +4,28 @@ namespace TicTacToe
 {
     public class AIPlayer : IPlayer
     {
-        private readonly string _name;
-
-        public AIPlayer(string name)
-        {
-            _name = name;
-        }
-
+        
         public TicTacState State { get; set; }
         
         public void MakeTurn(IPlayerReceiver model)
         {
-            model.MakeTurn(State, AiSelectCell(model));
+            AiSelectCell(model, out var x, out var y);
+            
+            model.MakeTurn(State,x ,y);
         }
         
-        private Vector2 AiSelectCell(IPlayerReceiver model) 
+        private void AiSelectCell(IPlayerReceiver model, out int x, out int y)
         {
-            var x = Random.Range(1, 4); 
-            var y = Random.Range(1, 4);
+            var massLength = model.Grid.GetLength(1);
             
-            var aiCoordinate = new Vector2(x,y);
+            x = Random.Range(0, massLength); 
+            y = Random.Range(0, massLength);
             
-            while (model.Grid[aiCoordinate] != TicTacState.None) 
+            while (model.Grid[x,y] != TicTacState.None) 
             { 
-                x = Random.Range(1, 4); 
-                y = Random.Range(1, 4);
-                
-                aiCoordinate = new Vector2(x,y); 
+                x = Random.Range(0, massLength); 
+                y = Random.Range(0, massLength);
             }
-
-            return aiCoordinate;
         }
     }
 }

@@ -19,7 +19,7 @@ namespace TicTacToe
 
         private bool _aIEnabled;
 
-        public Action<Vector2> CellSelected { get; set; }
+        public Action<int, int> CellSelected { get; set; }
 
         private void Awake()
         {
@@ -49,8 +49,8 @@ namespace TicTacToe
 
         private void StartHotSeatGame()
         {
-            IPlayer player1 = new LocalPlayer("Player_1", this);
-            IPlayer player2 = new LocalPlayer("Player_2", this);
+            IPlayer player1 = new LocalPlayer(this);
+            IPlayer player2 = new LocalPlayer( this);
 
             _model.StartBattle(player1, player2);
             hotSeatButton.enabled = false;
@@ -58,8 +58,8 @@ namespace TicTacToe
 
         private void StartWithAIGame()
         {
-            IPlayer player = new LocalPlayer("Player", this);
-            IPlayer ai = new AIPlayer("AI");
+            IPlayer player = new LocalPlayer(this);
+            IPlayer ai = new AIPlayer();
 
             _model.StartBattle(player, ai);
             hotSeatButton.enabled = false;
@@ -78,17 +78,18 @@ namespace TicTacToe
 
         private void OnCellSelected(Vector2 coordinate)
         {
-            CellSelected?.Invoke(coordinate);
+            CellSelected?.Invoke((int)coordinate.x ,(int)coordinate.y);
         }
 
-        private void OnPlayerMadeTurn(Vector2 coordinate, TicTacState state)
+        private void OnPlayerMadeTurn(TicTacState state, int coordinateX,int coordinateY)
         {
-            _cellControllers[coordinate].CellStateChange(state);
+            _cellControllers[new Vector2(coordinateX, coordinateY)].CellStateChange(state);
         }
 
         private void OnWinnerFound(TicTacState state)
         {
-            winText.text = $"Wictory: {state}";
+            winText.text = $"Victory: {state}";
+            
             _model.WinnerFound -= OnWinnerFound;
             _model.PlayerMadeTurn -= OnPlayerMadeTurn;
 

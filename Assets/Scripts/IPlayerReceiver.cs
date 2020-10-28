@@ -1,11 +1,9 @@
-﻿using System.Collections.Generic;
-using UnityEngine;
-
-namespace TicTacToe
+﻿namespace TicTacToe
 {
     public interface IPlayerReceiver
     {
-        Dictionary<Vector2, TicTacState> Grid { get; }
-        void MakeTurn(TicTacState state, Vector2 coordinate);
+        
+        TicTacState[,] Grid { get; }
+        void MakeTurn(TicTacState state, int coordinateX, int coordinateY);
     }
 }
