@@ -48,8 +48,7 @@ namespace TicTacToe
 
             _activePlayer.MakeTurn(this);
         }
-
-
+        
         void IPlayerReceiver.MakeTurn(TicTacState state, int coordinateX, int coordinateY)
         {
             SetState(state, coordinateX, coordinateY);

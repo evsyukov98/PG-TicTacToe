@@ -4,6 +4,6 @@
     {
         
         TicTacState State { get; set; }
-        void MakeTurn(IPlayerReceiver input);
+        void MakeTurn(IPlayerReceiver model);
     }
 }

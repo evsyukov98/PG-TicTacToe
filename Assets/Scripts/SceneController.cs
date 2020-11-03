@@ -2,18 +2,21 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class SceneController : MonoBehaviour
+namespace TicTacToe
 {
-
-    public static IEnumerator RestartGame(int timer)
+    public class SceneController : MonoBehaviour
     {
-        yield return new WaitForSeconds(timer);
 
-        SceneManager.LoadScene(0);
-    }
-    
-    public static void RestartGame()
-    {
-        SceneManager.LoadScene(0);
+        public static IEnumerator RestartGame(int timer)
+        {
+            yield return new WaitForSeconds(timer);
+
+            SceneManager.LoadScene(0);
+        }
+
+        public static void RestartGame()
+        {
+            SceneManager.LoadScene(0);
+        }
     }
 }

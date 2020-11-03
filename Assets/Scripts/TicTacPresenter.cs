@@ -10,15 +10,12 @@ namespace TicTacToe
 
         [SerializeField] private Button hotSeatButton = default;
         [SerializeField] private Button withAIButton = default;
-
         [SerializeField] private Text winText = default;
 
         private Dictionary<Vector2, CellController> _cellControllers;
 
         private readonly TicTacModel _model = new TicTacModel();
-
-        private bool _aIEnabled;
-
+        
         public Action<int, int> CellSelected { get; set; }
 
         private void Awake()

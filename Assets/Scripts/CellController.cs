@@ -7,8 +7,6 @@ using UnityEngine.UI;
 public class CellController : MonoBehaviour
 {
     
-    public event Action<Vector2> CellSelected;
-
     [SerializeField] public Vector2 coordinate;
     
     [SerializeField] private Sprite cross = default;
@@ -17,6 +15,8 @@ public class CellController : MonoBehaviour
     private Image _image;
     private Button _button;
     
+    public event Action<Vector2> CellSelected;
+
     private void Awake()
     {
         _image = GetComponent<Image>();
@@ -25,11 +25,6 @@ public class CellController : MonoBehaviour
         _button.onClick.AddListener(OnButtonClick);
     }
     
-    private void OnButtonClick()
-    {
-        CellSelected?.Invoke(coordinate);
-    }
-
     public void CellStateChange(TicTacState state)
     {
         if (state == TicTacState.Cross)
@@ -49,4 +44,8 @@ public class CellController : MonoBehaviour
         _button.interactable = active;
     }
     
+    private void OnButtonClick()
+    {
+        CellSelected?.Invoke(coordinate);
+    }
 }
